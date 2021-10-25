@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Untuya Firmware Configuration</title>
+		<style>
+			label { display:inline-block; width: 12em; }
+			input, select { display:inline-block; width: 32ex; }
+		</style>
+	</head>
+	<body>
+		<h1>Untuya Firmware Configuration</h1>
+		<form id="patch_firmware_form">
+			<ul class="grid">
+	
+					<li><label for="unique_device_name">unique_device_name</label> <input id="unique_device_name" type="text" maxlength="32" value="untuya1" > Unique name for the device (shuld be one single "word")</li>
+			
+					<li><label for="your_wifi_password">your_wifi_password</label> <input id="your_wifi_password" type="text" maxlength="32" value="Your WIFI Secret"> Your WIFI Password (WPA[2]-PSK)</li>
+			
+					<li><label for="your_wifi_ssid">your_wifi_ssid</label> <input id="your_wifi_ssid" type="text" maxlength="32" value="Your WIFI Name"> Your WIFI Name (SSID)</li>
+			
+					<li><label for="your_mqtt_broker_host">your_mqtt_broker_host</label> <input id="your_mqtt_broker_host" type="text" maxlength="32" value="192.168.1.1"> Your mqtt-broker DNS-Name or IP(v4)-Address </li>
+			
+					<li><label for="your_mqtt_broker_tcp_port">your_mqtt_broker_tcp_port</label> <input id="your_mqtt_broker_tcp_port" type="number" min="0" max="65535" step="1" value="1883"> Your mqtt-broker TCP portnumber (MQTT's default portnumber is 1883)</li>
+				
+					<li><label for="your_mqtt_user">your_mqtt_user</label> <input id="your_mqtt_user" type="text" maxlength="32" value="Your MQTT Username"> Username to connect to your mqtt-broker (set it empty if your broker don't need a username and passwort)</li>
+			
+					<li><label for="your_mqtt_pass">your_mqtt_pass</label> <input id="your_mqtt_pass" type="text" maxlength="32" value="Your MQTT Passwort"> Password to connect to your mqtt-broker</li>
+					
+					<li><label for="gpio_wakeup_io">gpio_wakeup_io</label>
+					<select id="gpio_wakeup_io">
+						<option value="0"> IO0 (GPIO_PIN 4)</option>
+						<option value="1"> IO1 (GPIO_PIN 5)</option>
+						<option value="2"> IO2 (GPIO_PIN 6)</option>
+						<option value="3"> IO3 (GPIO_PIN 7)</option>
+						<option value="4"> IO4 (GPIO_PIN 17)</option>
+						<option value="5"> IO5 (GPIO_PIN 18)</option>
+						<option value="6" selected> IO6 (GPIO_PIN 19)</option>
+						<option value="7"> IO7 (GPIO_PIN 20)</option>
+						<option value="8"> IO8 (GPIO_PIN 21)</option>
+						<option value="9"> IO9 (GPIO_PIN 22)</option>
+					</select> Only certain GPIO of port A can be used as an wakeup-trigger</li>
+					
+					<li><label for="gpio_pin_pull">gpio_pin_pull</label>
+					<select id="gpio_pin_pull">
+						<option value="0"> Don't use build-in pullup/pulldown resistor</option>
+						<option value="1"> Use build-in pulldown resistor</option>
+						<option value="2" selected> Use build-in pullup resistor </option>
+					</select> How should the build-in pullup/pulldown resistor behave?</li>
+				
+					<li><label for="time_wakeup_sec">time_wakeup_sec</label> <input id="time_wakeup_sec" type="number" min="1" max="67108" step="1" value="43200"> 43200 seconds are 12h, there is a limit at 67108 seconds</li>
+				
+					<li><label for="firmware_file_to_patch">firmware_file_to_patch</label> <input id="firmware_file_to_patch" type="file"> An unpatched firmware (untuya.bin); There shuld be one in the "build_output" directory</li>
+		
+			</ul>
+			<p>
+				<input type="submit" value="Patch Firmware"> An link for saving the patched firmware should appeare.
+			</p>
+			<p style="visibility: hidden" id="saveFirmwareParagraph">
+				<a href="about:blank" id="saveFirmwareLink">Save Firmware</a> Save it into the "build_output" and overwrite any existing app.bin.
+			</p>
+		</form>
+		<h2>How to use/flash</h2>
+		<a href="https://github.com/th-wilde/untuya">See the Readme</a>
+		<script>
+			const element = document.querySelector('form');
+			document.getElementById('patch_firmware_form').addEventListener('submit', event => {
+				event.preventDefault();
+				var file = document.getElementById('firmware_file_to_patch').files[0];
+				
+				var fr = new FileReader();
+				fr.addEventListener('load', function () {
+					a = new Uint8Array(this.result);
+
+					a = replaceBytes(a, stringToByteArray(nullFilledString("unique_device_name")), stringToByteArray(nullFilledString(document.getElementById('unique_device_name').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_wifi_password")), stringToByteArray(nullFilledString(document.getElementById('your_wifi_password').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_wifi_ssid")), stringToByteArray(nullFilledString(document.getElementById('your_wifi_ssid').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_mqtt_broker_host")), stringToByteArray(nullFilledString(document.getElementById('your_mqtt_broker_host').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_mqtt_broker_tcp_port")), stringToByteArray(nullFilledString(document.getElementById('your_mqtt_broker_tcp_port').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_mqtt_user")), stringToByteArray(nullFilledString(document.getElementById('your_mqtt_user').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("your_mqtt_pass")), stringToByteArray(nullFilledString(document.getElementById('your_mqtt_pass').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("gpio_wakeup_io")), stringToByteArray(nullFilledString(document.getElementById('gpio_wakeup_io').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("gpio_pin_pull")), stringToByteArray(nullFilledString(document.getElementById('gpio_pin_pull').value)));
+					a = replaceBytes(a, stringToByteArray(nullFilledString("time_wakeup_sec")), stringToByteArray(nullFilledString(document.getElementById('time_wakeup_sec').value)));
+
+					var dlFile = new File([a.buffer], "app.bin", {type: 'application/octet-stream'});
+					document.getElementById('saveFirmwareLink').href = URL.createObjectURL(dlFile);
+					document.getElementById('saveFirmwareParagraph').style.visibility = "visible";
+				});
+				fr.readAsArrayBuffer(file);
+			});
+			
+			function nullFilledString(basestring){
+				for(let i = basestring.length; i < 32; i++)
+				{
+					basestring += "\0";
+				}
+				return basestring;
+			}
+			
+			function replaceBytes(fileData, dataFrom, dataTo) {
+				var loc = 0, sz = fileData.length;
+				var checksComplete = 0, totalChecks = dataFrom.length;
+				while(loc < sz && checksComplete < totalChecks) {
+					if(dataFrom[checksComplete] === fileData[loc++])
+						checksComplete++;
+					else checksComplete = 0;
+				}
+				if(checksComplete === totalChecks) {
+					;
+					while(0 <= checksComplete){
+						fileData[loc--] = dataTo[checksComplete--]
+					}
+				}
+				return fileData;
+			};
+			
+			function stringToByteArray(s){
+
+				var result = new Uint8Array(s.length);
+				for (var i=0; i<s.length; i++){
+					result[i] = s.charCodeAt(i);
+				}
+				return result;
+			}
+		</script>
+	</body>
+</html>
