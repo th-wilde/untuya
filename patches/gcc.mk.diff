@@ -1,5 +1,7 @@
---- XR809SDK/gcc.mk	2021-10-13 18:38:09.000000000 +0200
-+++ XR809SDK_patches/gcc.mk	2021-10-25 09:43:42.000000000 +0200
+diff --git a/gcc.mk b/gcc.mk
+index 9f06293..4c7f543 100755
+--- a/gcc.mk
++++ b/gcc.mk
 @@ -5,7 +5,7 @@
  # ----------------------------------------------------------------------------
  # cross compiler
@@ -9,7 +11,7 @@
  CC_PREFIX := $(CC_DIR)/arm-none-eabi-
  
  AS      := $(CC_PREFIX)as
-@@ -79,10 +79,10 @@
+@@ -79,10 +79,10 @@ endif
  
  CC_FLAGS = $(CPU) -c $(DBG_FLAG) -fno-common -fmessage-length=0 \
  	-fno-exceptions -ffunction-sections -fdata-sections -fomit-frame-pointer \
