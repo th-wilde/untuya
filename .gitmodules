@@ -1,0 +1,3 @@
+[submodule "XR809SDK"]
+	path = XR809SDK
+	url = https://github.com/XradioTech/XR809SDK.git
