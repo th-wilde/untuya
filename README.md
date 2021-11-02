@@ -1,5 +1,5 @@
 # untuya
-A custom firmware to bring MQTT to XR809 SOC (like the tuya XR3-Module) powered door and widow sensors.
+A custom firmware to bring MQTT to XR809 SOC powered door and widow sensors. (like the tuya XR3-Module)
 
 <img src="/doc/assets/Tuya_Device.jpg?raw=true" height="250" alt="Overview shot of sensor with packaging" title="Overview shot of sensor with packaging"> <img src="/doc/assets/Tuya_Device_detail.jpg?raw=true" height="250" alt="Detail shot of sensor pcb" title="Detail shot of sensor pcb">
 
